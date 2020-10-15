@@ -60,6 +60,12 @@ for obc in example-noobaa example-rgw; do
 		put-bucket-policy --bucket $bucket_name \
 		--policy "$(jq -c . $awsdir/policy.json)"
 
+	echo "  setting bucket acl"
+	podman run -v $fqawsdir:/root/.aws \
+		amazon/aws-cli s3api --endpoint-url https://${bucket_host} \
+		put-bucket-acl --bucket $bucket_name \
+		--acl public-read
+
 	echo "  upload file to bucket after setting policy"
 	podman run -v $fqawsdir:/root/.aws \
 		-v $PWD/files:/data -w /data \
